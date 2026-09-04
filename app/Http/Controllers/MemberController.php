@@ -15,17 +15,25 @@ class MemberController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'group' => 'required|string|max:255',
-            'archived' => 'sometimes|boolean',
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'group' => 'required|string|max:255',
+        'archived' => 'sometimes|boolean',
+    ]);
 
-        $member = Member::create($validated);
+    $member = Member::firstOrCreate(
+        [
+            'name' => $validated['name'],
+            'group' => $validated['group'],
+        ],
+        [
+            'archived' => $validated['archived'] ?? false,
+        ]
+    );
 
-        return response()->json($member, 201);
-    }
+    return response()->json($member, 201);
+}
 
     public function update(Request $request, Member $member)
     {
